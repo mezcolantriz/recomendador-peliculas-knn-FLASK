@@ -11,12 +11,21 @@ app = Flask(__name__)
 # Cargar las variables de entorno
 load_dotenv()
 
-# Cargar el dataset limpio y los modelos
-df = pd.read_csv("src/movies_cleaned.csv")
-with open("src/model/vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
-with open("src/model/similarity.pkl", "rb") as f:
-    similarity = pickle.load(f)
+# Asegúrate de que tienes el dataframe `df` con la columna `tags`
+if not os.path.exists("src/model/vectorizer.pkl"):
+    # Crea el directorio si no existe
+    os.makedirs("src/model", exist_ok=True)
+    
+    # Crea y guarda el vectorizador
+    cv = CountVectorizer(max_features=5000, stop_words="english")
+    vectors = cv.fit_transform(df["tags"]).toarray()
+    
+    with open("src/model/vectorizer.pkl", "wb") as f:
+        pickle.dump(cv, f)
+else:
+    # Carga el vectorizador si ya existe
+    with open("src/model/vectorizer.pkl", "rb") as f:
+        cv = pickle.load(f)
 
 # Configurar traducción
 translator = Translator()
