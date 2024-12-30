@@ -5,27 +5,31 @@ from dotenv import load_dotenv
 import os
 from googletrans import Translator
 import requests  # Asegurarse de que requests está instalado
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
 # Cargar las variables de entorno
 load_dotenv()
 
-# Asegúrate de que tienes el dataframe `df` con la columna `tags`
-if not os.path.exists("src/model/vectorizer.pkl"):
-    # Crea el directorio si no existe
-    os.makedirs("src/model", exist_ok=True)
-    
-    # Crea y guarda el vectorizador
-    cv = CountVectorizer(max_features=5000, stop_words="english")
-    vectors = cv.fit_transform(df["tags"]).toarray()
-    
-    with open("src/model/vectorizer.pkl", "wb") as f:
-        pickle.dump(cv, f)
-else:
-    # Carga el vectorizador si ya existe
-    with open("src/model/vectorizer.pkl", "rb") as f:
-        cv = pickle.load(f)
+# Cargar el dataset limpio
+df = pd.read_csv("src/movies_cleaned.csv")
+
+# Vectorización y similitudes
+cv = CountVectorizer(max_features=5000, stop_words="english")
+vectors = cv.fit_transform(df["title"]).toarray()  # Cambia "title" si hay otra columna mejor
+similarity = cosine_similarity(vectors)
+
+# Crear el directorio de modelos si no existe
+os.makedirs("src/model", exist_ok=True)
+
+# Guardar modelos
+with open("src/model/vectorizer.pkl", "wb") as f:
+    pickle.dump(cv, f)
+
+with open("src/model/similarity.pkl", "wb") as f:
+    pickle.dump(similarity, f)
 
 # Configurar traducción
 translator = Translator()
