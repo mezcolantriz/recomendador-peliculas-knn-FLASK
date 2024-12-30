@@ -16,13 +16,34 @@ load_dotenv()
 
 # Cargar el dataset limpio
 df = pd.read_csv("src/movies_cleaned.csv")
+vectorizer_path = "src/model/vectorizer.pkl"
+similarity_path = "src/model/similarity.pkl"
 
-# Cargar los modelos previamente generados
-with open("src/model/vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
+if not os.path.exists(vectorizer_path) or not os.path.exists(similarity_path):
+    print("Modelos no encontrados. Generándolos...")
 
-with open("src/model/similarity.pkl", "rb") as f:
-    similarity = pickle.load(f)
+    # Generar el vectorizador
+    vectorizer = CountVectorizer(max_features=5000, stop_words="english")
+    vectors = vectorizer.fit_transform(df["tags"]).toarray()  # 'tags' ya está en el dataset limpio
+
+    # Calcular la matriz de similitud
+    similarity = cosine_similarity(vectors)
+
+    # Guardar los modelos
+    os.makedirs("src/model", exist_ok=True)
+    with open(vectorizer_path, "wb") as f:
+        pickle.dump(vectorizer, f)
+    with open(similarity_path, "wb") as f:
+        pickle.dump(similarity, f)
+    print("Modelos generados y guardados correctamente.")
+else:
+    print("Modelos encontrados. Cargándolos...")
+
+    # Cargar los modelos existentes
+    with open(vectorizer_path, "rb") as f:
+        vectorizer = pickle.load(f)
+    with open(similarity_path, "rb") as f:
+        similarity = pickle.load(f)
 
 # Configurar traducción
 translator = Translator()
