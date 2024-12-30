@@ -1,0 +1,219 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Header Styles */
+.header {
+    background: linear-gradient(to right, #1c1c1c, #292929);
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-title {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+    color: #f4c10f;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.3s;
+}
+
+.header-icon:hover {
+    transform: rotate(20deg);
+}
+
+/* Search Bar */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.search-bar {
+    width: 60%;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 2px solid #ff4500;
+    font-size: 1.2rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s;
+}
+
+.search-bar:focus {
+    border-color: #ff6347;
+    outline: none;
+}
+
+.search-button {
+    background-color: #ff4500;
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.search-button:hover {
+    background-color: #e03e00;
+    transform: scale(1.05);
+}
+
+.autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 20%;
+    width: 60%;
+    background: #292929;
+    border-radius: 10px;
+    border: 1px solid #ff4500;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+}
+
+.autocomplete-suggestions li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #ffffff;
+}
+
+.autocomplete-suggestions li:hover {
+    background-color: #ff4500;
+}
+
+# Instrucciones de búsqueda 
+
+.search-instructions-container {
+    text-align: left; /* Cambia a 'center' si prefieres centrarlo completamente */
+    max-width: 800px;
+    margin: 20px auto; /* Centra horizontalmente y agrega un margen superior/inferior */
+    padding: 10px;
+    color: #f4c10f;
+    font-size: 1rem; /* Tamaño más pequeño para el texto */
+}
+.search-instructions-container h3 {
+    margin-left: 20px; /* Ajusta el valor para mover el título a la derecha */
+    font-size: 1.2rem; /* Mantén un tamaño legible */
+    color: #f4c10f; /* Color del título */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Sombra suave para destacar */
+}
+
+
+.search-instructions-container ul {
+    list-style-type: disc;
+    margin: 0;
+    padding-left: 40px; /* Ajusta el sangrado desde la izquierda */
+}
+
+.search-instructions-container ul li {
+    margin-bottom: 10px; /* Espaciado entre los puntos */
+}
+
+
+/* Recommendations Grid */
+.recommendations {
+    padding: 2rem;
+    text-align: center;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.movie-item {
+    background-color: #1f1f1f;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.movie-title {
+    display: block;
+    margin-top: 0.5rem;
+    color: #f4c10f;
+    font-size: 1.2rem;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.movie-title:hover {
+    color: #ffeb3b;
+}
+
+/* No Results Section */
+.no-results {
+    text-align: center;
+    padding: 2rem;
+}
+
+.no-image {
+    width: 400px;
+    margin: 1rem auto;
+    display: block;
+}
+
+.no-results p {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    color: #f4c10f;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Intro Screen */
+.intro {
+    text-align: center;
+    padding: 4rem;
+    color: #f4c10f;
+    font-size: 1.8rem;
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

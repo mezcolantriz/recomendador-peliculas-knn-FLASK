@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de películas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <img class="header-icon" src="{{ url_for('static', filename='film_reel.png') }}" alt="Film Icon">
+            <h1 class="header-title">Recomendador de películas</h1>
+            <img class="header-icon" src="{{ url_for('static', filename='film_reel.png') }}" alt="Film Icon">
+        </div>
+    </header>
+
+    <div class="search-container">
+        <form method="POST">
+            <input 
+                type="text" 
+                class="search-bar" 
+                name="movie" 
+                id="movie" 
+                placeholder="Busca una peli..." 
+                autocomplete="off">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+        <ul id="suggestions" class="autocomplete-suggestions"></ul>
+    </div>
+
+    <div class="recommendations">
+        {% if movie and recommendations %}
+            {% if recommendations[0][0] == "No encontrado" %}
+                <div class="no-results">
+                    <img class="no-image" src="{{ recommendations[0][1] }}" alt="No image">
+                    <p>No he encontrado nada, pero puedes ver la tele con Jorge Ponce aquí si te aburres:</p>
+                    <iframe 
+                        width="560" 
+                        height="315" 
+                        src="https://www.youtube.com/embed/xesksy_X7Lw?si=4_inSBeJ39yDMesm" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            {% else %}
+                <h2>Recommendations for "{{ movie }}":</h2>
+                <div class="movie-grid">
+                    {% for title, poster in recommendations %}
+                        <div class="movie-item">
+                            <img class="movie-poster" src="{{ poster }}" alt="{{ title }}">
+                            <a class="movie-title" href="https://www.google.com/search?q={{ title }}" target="_blank">
+                                {{ title }}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <!-- Instrucciones de búsqueda -->
+    <div class="search-instructions-container">
+        <h3 class="instructions-title">Instrucciones de búsqueda</h3>
+        <ul>
+            <li>Puedes buscar en minúsculas y mayúsculas.</li>
+            <li>El autocompletado mostrará sugerencias solo en inglés.</li>
+            <li>Prueba a escribir el título exacto en español y dale a Enter, si no encuentras la peli te he dejado una sorpresa que sustituya tu película.</li>
+        </ul>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#movie').on('input', function () {
+                const query = $(this).val();
+                if (query.length > 1) {
+                    $.get('/autocomplete', { q: query }, function (data) {
+                        const suggestions = data.suggestions;
+                        $('#suggestions').empty();
+                        if (suggestions.length > 0) {
+                            suggestions.forEach(suggestion => {
+                                $('#suggestions').append(`<li>${suggestion}</li>`);
+                            });
+                        }
+                    });
+                } else {
+                    $('#suggestions').empty();
+                }
+            });
+
+            $('#suggestions').on('click', 'li', function () {
+                $('#movie').val($(this).text());
+                $('#suggestions').empty();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+__pycache__
+.env
+.learn
+.json
+src/model/
+src/movies_cleaned.csv
+
+
+
