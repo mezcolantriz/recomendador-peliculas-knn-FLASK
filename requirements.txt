@@ -1,7 +1,8 @@
 Flask==2.3.2
 gunicorn==20.1.0
 googletrans==4.0.0-rc1
-pandas==2.1.1
+pandas==1.3.5
 scikit-learn==1.3.0
 python-dotenv==1.0.0
 requests==2.31.0
+numpy==1.21.6
