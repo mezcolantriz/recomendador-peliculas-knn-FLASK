@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 from googletrans import Translator
 import requests  # Asegurarse de que requests está instalado
+from sklearn.feature_extraction.text import CountVectorizer
+
 
 app = Flask(__name__)
 
