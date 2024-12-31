@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify, url_for
 import pandas as pd
-import joblib
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
@@ -17,19 +16,16 @@ load_dotenv()
 # Cargar el dataset limpio
 df = pd.read_csv("src/movies_cleaned.csv")
 
-# Generar y optimizar el vectorizador
-vectorizer = CountVectorizer(max_features=4000, stop_words="english")  
-vectors = vectorizer.fit_transform(df["tags"])  # Matriz dispersa (no usamos .toarray())
+# Generar y optimizar el vectorizador usando la columna 'tags'
+vectorizer = CountVectorizer(max_features=5000, stop_words="english")
+vectors = vectorizer.fit_transform(df["tags"])  # Matriz dispersa (usando 'tags')
 
 # Reducir la dimensionalidad de la matriz de similitud
 similarity_matrix = cosine_similarity(vectors)
-svd = TruncatedSVD(n_components=2000)  # Reducimos la dimensionalidad a 500
-reduced_similarity = svd.fit_transform(similarity_matrix)
 
-# Guardar los modelos optimizados
-os.makedirs("src/model", exist_ok=True)
-joblib.dump(vectorizer, "src/model/vectorizer.pkl")
-joblib.dump(reduced_similarity, "src/model/similarity.pkl")
+
+# Cargar el modelo en memoria al inicio
+# Ya se realizó el entrenamiento arriba, así que no necesitas otra función 'train_model()'
 
 # Configurar traducción
 translator = Translator()
@@ -47,7 +43,7 @@ def recommend(movie_title):
 
     if not movie_index.empty:
         # Obtener las películas más similares
-        movie_list = reduced_similarity[movie_index[0]]
+        movie_list = similarity_matrix[movie_index[0]]
         movie_list = sorted(list(enumerate(movie_list)), reverse=True, key=lambda x: x[1])[1:6]
         recommendations = [(df.iloc[i[0]].title, get_poster(df.iloc[i[0]].title)) for i in movie_list]
     else:
