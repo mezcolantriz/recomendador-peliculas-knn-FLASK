@@ -1,49 +1,45 @@
 from flask import Flask, render_template, request, jsonify, url_for
 import pandas as pd
-import pickle
+import joblib
 from dotenv import load_dotenv
 import os
+from io import BytesIO
+import gdown
 from googletrans import Translator
-import requests  # Asegurarse de que requests está instalado
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import requests
 
 app = Flask(__name__)
 
 # Cargar las variables de entorno
 load_dotenv()
 
+# URLs de los modelos en Google Drive
+VECTOR_URL = "https://drive.google.com/uc?id=1JeoppIvpBBFXustHyqLGgv87g4LUWAVL"
+SIMILARITY_URL = "https://drive.google.com/uc?id=114VkuE7369cC3HaEPV6o9zSJR-ucvc9p"
+
+# Función para descargar y cargar los modelos desde Google Drive
+def load_model_from_drive(url, output_path):
+    print(f"Accediendo al modelo desde {url}...")
+    gdown.download(url, output_path, quiet=False)
+    print("Modelo descargado exitosamente.")
+    return joblib.load(output_path)
+
+# Descargar y cargar los modelos
+vectorizer_path = "src/model/vectorizer_compressed.pkl"
+similarity_path = "src/model/similarity_compressed.pkl"
+
+if not os.path.exists(vectorizer_path):
+    vectorizer = load_model_from_drive(VECTOR_URL, vectorizer_path)
+else:
+    vectorizer = joblib.load(vectorizer_path)
+
+if not os.path.exists(similarity_path):
+    similarity = load_model_from_drive(SIMILARITY_URL, similarity_path)
+else:
+    similarity = joblib.load(similarity_path)
 
 # Cargar el dataset limpio
 df = pd.read_csv("src/movies_cleaned.csv")
-vectorizer_path = "src/model/vectorizer.pkl"
-similarity_path = "src/model/similarity.pkl"
-
-if not os.path.exists(vectorizer_path) or not os.path.exists(similarity_path):
-    print("Modelos no encontrados. Generándolos...")
-
-    # Generar el vectorizador
-    vectorizer = CountVectorizer(max_features=5000, stop_words="english")
-    vectors = vectorizer.fit_transform(df["tags"]).toarray()  # 'tags' ya está en el dataset limpio
-
-    # Calcular la matriz de similitud
-    similarity = cosine_similarity(vectors)
-
-    # Guardar los modelos
-    os.makedirs("src/model", exist_ok=True)
-    with open(vectorizer_path, "wb") as f:
-        pickle.dump(vectorizer, f)
-    with open(similarity_path, "wb") as f:
-        pickle.dump(similarity, f)
-    print("Modelos generados y guardados correctamente.")
-else:
-    print("Modelos encontrados. Cargándolos...")
-
-    # Cargar los modelos existentes
-    with open(vectorizer_path, "rb") as f:
-        vectorizer = pickle.load(f)
-    with open(similarity_path, "rb") as f:
-        similarity = pickle.load(f)
 
 # Configurar traducción
 translator = Translator()
