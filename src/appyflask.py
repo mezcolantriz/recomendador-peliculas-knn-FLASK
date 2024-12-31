@@ -8,6 +8,7 @@ import os
 from googletrans import Translator
 import requests
 
+# https://knnparaflask.onrender.com
 app = Flask(__name__)
 
 # Cargar las variables de entorno
