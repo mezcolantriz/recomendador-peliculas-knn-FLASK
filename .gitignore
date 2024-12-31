@@ -2,7 +2,8 @@ __pycache__
 .env
 .learn
 .json
-src/model/
+src/explore.ipynb
+
 
 
 
