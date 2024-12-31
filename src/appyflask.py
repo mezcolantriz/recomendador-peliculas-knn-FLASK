@@ -3,8 +3,6 @@ import pandas as pd
 import joblib
 from dotenv import load_dotenv
 import os
-from io import BytesIO
-import gdown
 from googletrans import Translator
 import requests
 
@@ -13,30 +11,18 @@ app = Flask(__name__)
 # Cargar las variables de entorno
 load_dotenv()
 
-# URLs de los modelos en Google Drive
-VECTOR_URL = "https://drive.google.com/uc?id=1JeoppIvpBBFXustHyqLGgv87g4LUWAVL"
-SIMILARITY_URL = "https://drive.google.com/uc?id=114VkuE7369cC3HaEPV6o9zSJR-ucvc9p"
+# Rutas de los modelos locales
+VECTOR_PATH = "src/model/vectorizer.pkl"
+SIMILARITY_PATH = "src/model/similarity.pkl"
 
-# Función para descargar y cargar los modelos desde Google Drive
-def load_model_from_drive(url, output_path):
-    print(f"Accediendo al modelo desde {url}...")
-    gdown.download(url, output_path, quiet=False)
-    print("Modelo descargado exitosamente.")
-    return joblib.load(output_path)
+# Verificar y cargar los modelos locales
+if not os.path.exists(VECTOR_PATH) or not os.path.exists(SIMILARITY_PATH):
+    raise FileNotFoundError("Los modelos no se encontraron en la carpeta 'model'. Asegúrate de que están subidos al repositorio.")
 
-# Descargar y cargar los modelos
-vectorizer_path = "src/model/vectorizer_compressed.pkl"
-similarity_path = "src/model/similarity_compressed.pkl"
-
-if not os.path.exists(vectorizer_path):
-    vectorizer = load_model_from_drive(VECTOR_URL, vectorizer_path)
-else:
-    vectorizer = joblib.load(vectorizer_path)
-
-if not os.path.exists(similarity_path):
-    similarity = load_model_from_drive(SIMILARITY_URL, similarity_path)
-else:
-    similarity = joblib.load(similarity_path)
+print("Cargando modelos desde 'src/model'...")
+vectorizer = joblib.load(VECTOR_PATH)
+similarity = joblib.load(SIMILARITY_PATH)
+print("Modelos cargados exitosamente.")
 
 # Cargar el dataset limpio
 df = pd.read_csv("src/movies_cleaned.csv")
@@ -69,8 +55,13 @@ def recommend(movie_title):
 def get_poster(title):
     """Obtiene el póster de una película dado su título usando la API de TMDB."""
     api_key = os.getenv("TMDB_API_KEY")
-    base_url = f"https://api.themoviedb.org/3/search/movie"
+    if not api_key:
+        print("Error: Clave API de TMDB no configurada.")
+        return url_for("static", filename="no_image.jpg")
+
+    base_url = "https://api.themoviedb.org/3/search/movie"
     params = {"api_key": api_key, "query": title}
+
     try:
         response = requests.get(base_url, params=params)
         if response.status_code == 200:
@@ -82,7 +73,7 @@ def get_poster(title):
     except Exception as e:
         print(f"Error al obtener el póster: {e}")
 
-    # Si falla, devolver imagen predeterminada
+    # Si falla, devolver una imagen predeterminada
     return url_for("static", filename="no_image.jpg")
 
 @app.route("/", methods=["GET", "POST"])
