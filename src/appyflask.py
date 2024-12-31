@@ -1,33 +1,35 @@
 from flask import Flask, render_template, request, jsonify, url_for
 import pandas as pd
 import joblib
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import TruncatedSVD
 from dotenv import load_dotenv
 import os
 from googletrans import Translator
 import requests
-import numpy as np
-import joblib 
 
 app = Flask(__name__)
 
 # Cargar las variables de entorno
 load_dotenv()
 
-# Rutas de los modelos locales
-VECTOR_PATH = "src/model/vectorizer.pkl"
-SIMILARITY_PATH = "src/model/similarity.pkl"
-
-# Verificar y cargar los modelos locales
-if not os.path.exists(VECTOR_PATH) or not os.path.exists(SIMILARITY_PATH):
-    raise FileNotFoundError("Los modelos no se encontraron en la carpeta 'model'. Asegúrate de que están subidos al repositorio.")
-
-print("Cargando modelos desde 'src/model'...")
-vectorizer = joblib.load(VECTOR_PATH)
-similarity = joblib.load(SIMILARITY_PATH)
-print("Modelos cargados exitosamente.")
-
 # Cargar el dataset limpio
 df = pd.read_csv("src/movies_cleaned.csv")
+
+# Generar y optimizar el vectorizador
+vectorizer = CountVectorizer(max_features=4000, stop_words="english")  
+vectors = vectorizer.fit_transform(df["tags"])  # Matriz dispersa (no usamos .toarray())
+
+# Reducir la dimensionalidad de la matriz de similitud
+similarity_matrix = cosine_similarity(vectors)
+svd = TruncatedSVD(n_components=2000)  # Reducimos la dimensionalidad a 500
+reduced_similarity = svd.fit_transform(similarity_matrix)
+
+# Guardar los modelos optimizados
+os.makedirs("src/model", exist_ok=True)
+joblib.dump(vectorizer, "src/model/vectorizer.pkl")
+joblib.dump(reduced_similarity, "src/model/similarity.pkl")
 
 # Configurar traducción
 translator = Translator()
@@ -45,7 +47,7 @@ def recommend(movie_title):
 
     if not movie_index.empty:
         # Obtener las películas más similares
-        movie_list = similarity[movie_index[0]]
+        movie_list = reduced_similarity[movie_index[0]]
         movie_list = sorted(list(enumerate(movie_list)), reverse=True, key=lambda x: x[1])[1:6]
         recommendations = [(df.iloc[i[0]].title, get_poster(df.iloc[i[0]].title)) for i in movie_list]
     else:
