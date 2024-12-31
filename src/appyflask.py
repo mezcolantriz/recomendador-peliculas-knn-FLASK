@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 from googletrans import Translator
 import requests
+import numpy as np
+import joblib 
 
 app = Flask(__name__)
 
