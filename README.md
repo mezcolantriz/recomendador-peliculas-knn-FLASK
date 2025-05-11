@@ -23,8 +23,16 @@ Para acceder al recurso web se puede hacer desde # https://knnparaflask.onrender
 El proyecto está organizado de la siguiente manera:
 
 
-recomendador-peliculas-knn-FLASK/ │ ├── static/ # Archivos estáticos como CSS, imágenes y JavaScript ├── templates/ # Archivos HTML para la interfaz web ├── app.py # Script principal que ejecuta la aplicación Flask ├── knn.py # Implementación del algoritmo K-Nearest Neighbors ├── data/ # Directorio que contiene los datasets ├── requirements.txt # Lista de dependencias necesarias └── README.md # Este archivo
-
+```plaintext
+recomendador-peliculas-knn-FLASK/
+│
+├── static/               # Archivos estáticos como CSS, imágenes y JavaScript
+├── templates/            # Archivos HTML para la interfaz web
+├── app.py                # Script principal que ejecuta la aplicación Flask
+├── knn.py                # Implementación del algoritmo K-Nearest Neighbors
+├── data/                 # Directorio que contiene los datasets
+├── requirements.txt      # Lista de dependencias necesarias
+└── README.md             # Este archivo
 ---
 
 ## ⚙️ Instalación y Ejecución
