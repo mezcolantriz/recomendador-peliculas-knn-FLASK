@@ -5,6 +5,8 @@ Este proyecto es un **sistema de recomendación de películas** desarrollado com
 
 El objetivo principal de este proyecto es recomendar películas a los usuarios basándose en similitudes y preferencias, utilizando datos estructurados y procesados con Python.
 
+Para acceder al recurso web se puede hacer desde # https://knnparaflask.onrender.com
+
 ---
 
 ## 🚀 Características
